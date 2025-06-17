@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="//cdn.webix.com/edge/webix.css" type="text/css" charset="utf-8">
+        <script src="//cdn.webix.com/edge/webix.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    <body>
+            <script type="text/javascript" charset="utf-8">
+            var characters = [ ];
+            {% for character in character_list %}
+                characters.push({   
+                    id:{{character.id}},
+                    name:"{{character.name}}",
+                    movie:"{{character.movie}}",
+                    person:"{{character.person}}",
+                    created_at:"{{character.created_at}}",
+                    updated_at:"{{character.updated_at}}"
+                });
+            {% endfor %}
+            
+            webix.ready(function(){
+                webix.ui({
+                    view:"datatable", 
+                    columns:[
+                        { id:"id",    header:"",              adjust: true},
+                        { id:"name",   header:"name",    adjust: true},
+                        { id:"movie",   header:"movie",    adjust: true},
+                        { id:"person",   header:"person",    adjust: true},
+                        { id:"created_at",   header:"created at",         adjust: true},
+                        { id:"updated_at",   header:"updated at",         adjust: true}
+                    ],
+                    autoheight:true,
+                    scroll: "auto",
+                    data: characters
+                })
+            })
+
+        </script>
+    </body>
+</html>

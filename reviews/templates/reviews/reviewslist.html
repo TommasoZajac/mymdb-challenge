@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="//cdn.webix.com/edge/webix.css" type="text/css" charset="utf-8">
+        <script src="//cdn.webix.com/edge/webix.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    <body>
+
+        <script type="text/javascript" charset="utf-8">
+            //var movies = "http://127.0.0.1:8000/movies/api/movie/";
+            
+            var m=0;
+            var reviews = "{% url 'reviews:review-list' %}?object_id="+m;
+            var tab1 = {
+                view:"datatable", id:"datatable1", url: reviews,
+                columns:[
+                    { id:"id",    header:"",              adjust: true},
+                    { id:"text",   header:"review",    adjust: true},
+                    { id:"content_object",   header:"to whom is directed",    adjust: true},
+                    { id:"created_at",   header:"created at",         adjust: true},
+                    { id:"updated_at",   header:"updated at",         adjust: true}
+                ],
+                select:true,
+                autoheight:true,
+                scroll: "auto",
+                on:{
+                    onAfterLoad:function(){
+                    this.sort("id", "asc","int");
+                    this.markSorting("id", "asc","int");
+                    }
+                }
+            }
+            var movies = "{% url 'movies:movie-list' %}";
+
+            var tab = {
+                view:"datatable", id:"datatable", url: movies,
+                columns:[
+                    { id:"id",    header:"",              adjust: true},
+                    { id:"title",   header:"title",    adjust: true},
+                    { id:"description",   header:"description",    adjust: true},
+                    { id:"created_at",   header:"created at",         adjust: true},
+                    { id:"updated_at",   header:"updated at",         adjust: true}
+                ],
+                select:true,
+                autoheight:true,
+                scroll: "auto",
+                on:{
+                    onAfterLoad:function(){
+                    this.sort("id", "asc","int");
+                    this.markSorting("id", "asc","int");
+                    },
+                    onSelectChange: function(){
+                        reviews = "{% url 'reviews:review-list' %}" ;
+                        $$("datatable1").clearAll();
+                        webix.ajax().get(reviews,{object_id:this.getSelectedId(false).id}).then(function(result){
+                            $$("datatable1").parse(result);
+                        })
+                        
+                    }
+                }
+            }
+
+            
+
+
+            var form = {
+                view:"form", id:"form1", scroll:false,
+                elements:[
+                    { view:"textarea", name:"text", label:"Review" },
+                    {cols:[
+                        { view:"button", value:"Create", width:100,
+                            click:function(){ 
+                                webix.ajax().post("{% url 'movies:movie-list' %}", $$("form1").getValues() ).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                
+                                webix.message("'Create' action");
+                            }
+
+                        },
+                        { view:"button", value:"Update", width:100,
+                            click:function(){
+                                webix.ajax().put("{% url 'movies:movie-detail' 0%}".replace("0",$$("datatable").getSelectedId(false)), $$("form1").getValues()).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                webix.message("'Update' action");
+                            } 
+                        },
+                        { view:"button", value:"Delete", width:100,
+                            click:function(){ 
+                                webix.ajax().del("{% url 'movies:movie-detail' 0%}".replace("0",$$("datatable").getSelectedId(false))).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                webix.message("'Delete' action");
+                            } 
+                        }
+                    ]}
+                    
+                ]
+            };
+            
+            webix.ready(function(){
+                webix.ui({
+                    rows:[
+                    {
+                        type:"wide", rows:[ tab, tab1 ]
+                    },{type:"wide", rows:[ form]},{}
+                    ]
+                });
+
+                $$("form1").bind("datatable1")
+            })
+
+        </script>
+    </body>
+</html>

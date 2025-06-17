@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="//cdn.webix.com/edge/webix.css" type="text/css" charset="utf-8">
+        <script src="//cdn.webix.com/edge/webix.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    <body>
+
+        <script type="text/javascript" charset="utf-8">
+            var persons = "{% url 'cast:person-list' %}";
+            var tab = {
+                view:"datatable", id:"datatable", url: persons,
+                columns:[
+                    { id:"id",    header:"",              adjust: true},
+                    { id:"first_name",   header:"first name",    adjust: true},
+                    { id:"last_name",   header:"last name",    adjust: true},
+                    { id:"biography",    header:"biography",      adjust: true},
+                    { id:"created_at",   header:"created at",         adjust: true},
+                    { id:"updated_at",   header:"updated at",         adjust: true}
+                ],
+                select:true,
+                autoheight:true,
+                scroll: "auto",
+                on:{
+                    onAfterLoad:function(){
+                    this.sort("id", "asc","int");
+                    this.markSorting("id", "asc","int");
+                    }
+                }
+            }
+
+            var form = {
+                view:"form", id:"form1", scroll:false,
+                elements:[
+                    { view:"text", name:"first_name", label:"first name" },
+                    { view:"text", name:"last_name", label:"last name" },
+                    { view:"textarea", name:"biography", label:"biography" },
+                    {cols:[
+                        { view:"button", value:"Create", width:100,
+                            click:function(){ 
+                                webix.ajax().post("{% url 'cast:person-list' %}", $$("form1").getValues() ).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                
+                                webix.message("'Create' action");
+                            }
+
+                        },
+                        { view:"button", value:"Update", width:100,
+                            click:function(){
+                                webix.ajax().put("{% url 'cast:person-detail' 0%}".replace("0",$$("datatable").getSelectedId(false)), $$("form1").getValues()).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                webix.message("'Update' action");
+                            } 
+                        },
+                        { view:"button", value:"Delete", width:100,
+                            click:function(){ 
+                                webix.ajax().del("{% url 'cast:person-detail' 0%}".replace("0",$$("datatable").getSelectedId(false))).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                webix.message("'Delete' action");
+                            } 
+                        }
+                    ]}
+                    
+                ]
+            };
+            
+            webix.ready(function(){
+                webix.ui({
+                    rows:[
+                    {
+                        type:"wide", rows:[ tab, form ]
+                    },{}
+                    ]
+                });
+
+                $$("form1").bind("datatable")
+            })
+
+        </script>
+    </body>
+</html>
