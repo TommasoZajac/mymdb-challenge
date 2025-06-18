@@ -3,7 +3,9 @@ from django.views import generic
 from movies.models import Movie
 from movies.models import Character
 from rest_framework import viewsets
-from movies.serializers import MovieSerializer
+from movies.serializers import MovieSerializer,CharacterSerializer
+from django.db.models.functions import Concat
+from django.db.models import CharField, Value
 
 class MovieListView(generic.ListView):
     model=Movie
@@ -25,3 +27,24 @@ class MovieViewSet(viewsets.ModelViewSet):
     #permission_classes = [permissions.IsAuthenticatedOrReadOnly,
     #                      IsOwnerOrReadOnly]
     ordering = ['id']
+
+class CharacterViewSet(viewsets.ModelViewSet):
+    """
+    This ViewSet automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Character.objects.all()
+    serializer_class = CharacterSerializer
+    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,
+    #                      IsOwnerOrReadOnly]
+    ordering = ['id']
+
+    def get_queryset(self):
+        qs= super().get_queryset()
+        qs = qs.annotate(
+            person_name=Concat("person__first_name",Value(" ") ,"person__last_name",
+                               output_field = CharField())
+        )
+        return qs

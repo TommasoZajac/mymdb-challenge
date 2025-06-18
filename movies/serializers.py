@@ -23,3 +23,12 @@ class MovieSerializer(serializers.ModelSerializer):
         model = Movie
         fields = ['id','title','description','created_at','updated_at']
 
+class CharacterSerializer(serializers.ModelSerializer):
+    #owner = serializers.ReadOnlyField(source='owner.username')
+    movie = serializers.SlugRelatedField(slug_field='title', many=False, read_only=True)
+    person = serializers.CharField(source = "person_name", read_only=True)
+
+    class Meta:
+        model = Character
+        fields = ['id','name','movie','person','created_at','updated_at']
+

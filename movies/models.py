@@ -1,9 +1,12 @@
 from django.db import models
 from cast.models import Person
+from reviews.models import Review
+from django.contrib.contenttypes.fields import GenericRelation
 
 class Movie(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
+    reviews = GenericRelation(Review)
     created_at = models.DateTimeField("created_at",auto_now_add=True)
     updated_at = models.DateTimeField("updated_at",auto_now=True)
 
@@ -17,6 +20,7 @@ class Character(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
+    reviews = GenericRelation(Review)
     created_at = models.DateTimeField("created_at",auto_now_add=True)
     updated_at = models.DateTimeField("updated_at",auto_now=True)
 

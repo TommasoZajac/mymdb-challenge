@@ -9,6 +9,7 @@ app_name = "movies"
 # Create a router and register our ViewSets with it.
 router = DefaultRouter()
 router.register(r'movie', views.MovieViewSet)
+router.register(r'character', views.CharacterViewSet)
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [

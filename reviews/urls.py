@@ -7,7 +7,7 @@ app_name = "reviews"
 
 # Create a router and register our ViewSets with it.
 router = DefaultRouter()
-router.register(r'review', views.FilmReviewViewSet)
+router.register(r'review', views.ReviewViewSet)
 
 # The API URLs are now determined automatically by the router.
 urlpatterns = [

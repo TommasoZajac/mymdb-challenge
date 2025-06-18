@@ -5,34 +5,119 @@
         <script src="//cdn.webix.com/edge/webix.js" type="text/javascript" charset="utf-8"></script>
     </head>
     <body>
-            <script type="text/javascript" charset="utf-8">
-            var characters = [ ];
-            {% for character in character_list %}
-                characters.push({   
-                    id:{{character.id}},
-                    name:"{{character.name}}",
-                    movie:"{{character.movie}}",
-                    person:"{{character.person}}",
-                    created_at:"{{character.created_at}}",
-                    updated_at:"{{character.updated_at}}"
-                });
-            {% endfor %}
+
+        <script type="text/javascript" charset="utf-8">
+            //var movies = "http://127.0.0.1:8000/movies/api/movie/";
+            
+            var reviews = "{% url 'reviews:review-list' %}?content_type=8";
+            var tab1 = {
+                view:"datatable", id:"datatable1", url: reviews,
+                columns:[
+                    { id:"id",    header:"",              adjust: true},
+                    { id:"text",   header:"review",    adjust: true},
+                    { id:"content_object",   header:"to whom is directed",    adjust: true},
+                    { id:"created_at",   header:"created at",         adjust: true},
+                    { id:"updated_at",   header:"updated at",         adjust: true}
+                ],
+                select:true,
+                autoheight:true,
+                scroll: "auto",
+                on:{
+                    onAfterLoad:function(){
+                    this.sort("id", "asc","int");
+                    this.markSorting("id", "asc","int");
+                    }
+                }
+            }
+            var characters = "{% url 'movies:character-list' %}";
+
+            var tab = {
+                view:"datatable", id:"datatable", url: characters,
+                columns:[
+                    { id:"id",    header:"",              adjust: true},
+                    { id:"name",   header:"name",    adjust: true},
+                    { id:"movie",   header:"movie",    adjust: true},
+                    { id:"person",   header:"person",    adjust: true},
+                    { id:"created_at",   header:"created at",         adjust: true},
+                    { id:"updated_at",   header:"updated at",         adjust: true}
+                ],
+                select:true,
+                autoheight:true,
+                scroll: "auto",
+                on:{
+                    onAfterLoad:function(){
+                    this.sort("id", "asc","int");
+                    this.markSorting("id", "asc","int");
+                    },
+                    onSelectChange: function(){
+                        $$("datatable1").clearAll();
+                        $$("btnCreate").enable();
+                        webix.ajax().get(reviews,{object_id:this.getSelectedId(false).id}).then(function(result){
+                            $$("datatable1").parse(result);
+                        })
+                        
+                    }
+                }
+            }
+
+            
+
+
+            var form = {
+                view:"form", id:"form1", scroll:false,
+                elements:[
+                    { view:"textarea", name:"text", label:"Review" },
+                    {cols:[
+                        { view:"button", value:"Create", id:"btnCreate", width:100, disabled:true,
+                            click:function(){ 
+                                webix.ajax().post("{% url 'reviews:review-list' %}", {... $$("form1").getValues(), "content_type": 8, "object_id": $$("datatable").getSelectedId(false).id} ).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                
+                                webix.message("'Create' action");
+                            }
+
+                        },
+                        { view:"button", value:"Update", width:100,
+                            click:function(){
+                                webix.ajax().put("{% url 'reviews:review-detail' 0%}?content_type=8".replace("0",$$("datatable1").getSelectedId(false)), $$("form1").getValues()).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                webix.message("'Update' action");
+                            } 
+                        },
+                        { view:"button", value:"Delete", width:100,
+                            click:function(){ 
+                                webix.ajax().del("{% url 'reviews:review-detail' 0%}?content_type=8".replace("0",$$("datatable1").getSelectedId(false))).then(function(result){
+                                    location.reload();
+                                }).fail(function(xhr){
+                                    var response = JSON.parse(xhr.response);
+                                    webix.message({type: 'error', text: response.error.message});
+                                });
+                                webix.message("'Delete' action");
+                            } 
+                        }
+                    ]}
+                    
+                ]
+            };
             
             webix.ready(function(){
                 webix.ui({
-                    view:"datatable", 
-                    columns:[
-                        { id:"id",    header:"",              adjust: true},
-                        { id:"name",   header:"name",    adjust: true},
-                        { id:"movie",   header:"movie",    adjust: true},
-                        { id:"person",   header:"person",    adjust: true},
-                        { id:"created_at",   header:"created at",         adjust: true},
-                        { id:"updated_at",   header:"updated at",         adjust: true}
-                    ],
-                    autoheight:true,
-                    scroll: "auto",
-                    data: characters
-                })
+                    rows:[
+                    {
+                        type:"wide", rows:[ tab, tab1 ]
+                    },{type:"wide", rows:[ form]},{}
+                    ]
+                });
+
+                $$("form1").bind("datatable1")
             })
 
         </script>
