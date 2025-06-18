@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from reviews.models import Review
-
+from movies.serializers import MovieSerializer
 """
 class UserSerializer(serializers.ModelSerializer):
     snippets = serializers.PrimaryKeyRelatedField(many=True, queryset=Snippet.objects.all())
@@ -18,7 +18,7 @@ class SnippetSerializer(serializers.ModelSerializer):
 """
 class ReviewSerializer(serializers.ModelSerializer):
     #owner = serializers.ReadOnlyField(source='owner.username')
-    
+    movie = MovieSerializer(many=False, read_only=True)
     class Meta:
         model = Review
-        fields = ['id','text','created_at','updated_at']
+        fields = ['id','text','content_type','created_at','updated_at']
