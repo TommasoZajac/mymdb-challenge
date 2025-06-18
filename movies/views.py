@@ -16,29 +16,14 @@ class CharacterListView(generic.ListView):
     template_name="movies/characterlist.html"
 
 class MovieViewSet(viewsets.ModelViewSet):
-    """
-    This ViewSet automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-
-    Additionally we also provide an extra `highlight` action.
-    """
+    
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
-    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-    #                      IsOwnerOrReadOnly]
     ordering = ['id']
 
 class CharacterViewSet(viewsets.ModelViewSet):
-    """
-    This ViewSet automatically provides `list`, `create`, `retrieve`,
-    `update` and `destroy` actions.
-
-    Additionally we also provide an extra `highlight` action.
-    """
     queryset = Character.objects.all()
     serializer_class = CharacterSerializer
-    #permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-    #                      IsOwnerOrReadOnly]
     ordering = ['id']
 
     def get_queryset(self):

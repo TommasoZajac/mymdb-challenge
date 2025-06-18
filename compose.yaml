@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:17.5-alpine3.22
+    environment:
+      POSTGRES_DB: mymdb
+      POSTGRES_PASSWORD: admin 
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  mymdb:
+    image: mymdb:lastest
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+volumes: 
+  postgres-data:

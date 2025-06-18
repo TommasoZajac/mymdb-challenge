@@ -84,7 +84,7 @@ DATABASES = {
         "NAME": "mymdb",
         "USER": "postgres",
         "PASSWORD": "admin",
-        "HOST": "127.0.0.1",
+        "HOST": "postgres",
         "PORT": "5432",
     }
 }
