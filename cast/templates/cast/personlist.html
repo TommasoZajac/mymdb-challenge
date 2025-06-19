@@ -75,13 +75,36 @@
                     
                 ]
             };
-            
+            var nav = {rows:[{
+                            view:"label", 
+                            label: "Navigation bar", 
+                            inputWidth:100, 
+                            align:"left"
+                        },{cols:[
+                        
+                        { view:"button", value:"Movie", width:250,
+                            click:function(){ 
+                                webix.send("/movies/list/", null, "GET");
+                            }
+
+                        },
+                        { view:"button", value:"Character", width:250,
+                            click:function(){
+                                webix.send("/movies/characters/", null, "GET");
+                            } 
+                        },
+                        { view:"button", value:"Review", width:250,
+                            click:function(){
+                                webix.send("/reviews/", null, "GET");
+                            } 
+                        }
+                    ]}]}
             webix.ready(function(){
                 webix.ui({
                     rows:[
                     {
                         type:"wide", rows:[ tab, form ]
-                    },{}
+                    },{type:"wide", rows:[nav]}
                     ]
                 });
 

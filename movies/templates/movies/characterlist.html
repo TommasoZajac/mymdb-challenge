@@ -15,7 +15,7 @@
                 columns:[
                     { id:"id",    header:"",              adjust: true},
                     { id:"text",   header:"review",    adjust: true},
-                    { id:"content_object",   header:"to whom is directed",    adjust: true},
+                    { id:"content_object",   header:"to whom",    adjust: true},
                     { id:"created_at",   header:"created at",         adjust: true},
                     { id:"updated_at",   header:"updated at",         adjust: true}
                 ],
@@ -107,13 +107,39 @@
                     
                 ]
             };
+
+            var nav = {rows:[{
+                            view:"label", 
+                            label: "Navigation bar", 
+                            inputWidth:100, 
+                            align:"left"
+                        },{cols:[
+                        
+                        { view:"button", value:"Movie", width:250,
+                            click:function(){ 
+                                webix.send("/movies/list/", null, "GET");
+                            }
+
+                        },
+                        { view:"button", value:"Person", width:250,
+                            click:function(){
+                                webix.send("/cast/", null, "GET");
+                            } 
+                        },
+                        { view:"button", value:"Review", width:250,
+                            click:function(){
+                                webix.send("/reviews/", null, "GET");
+                            } 
+                        }
+                    ]}]}
+            
             
             webix.ready(function(){
                 webix.ui({
                     rows:[
                     {
                         type:"wide", rows:[ tab, tab1 ]
-                    },{type:"wide", rows:[ form]},{}
+                    },{type:"wide", rows:[ form]},{type:"wide", rows:[nav]}
                     ]
                 });
 

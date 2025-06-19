@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="//cdn.webix.com/edge/webix.css" type="text/css" charset="utf-8">
+        <script src="//cdn.webix.com/edge/webix.js" type="text/javascript" charset="utf-8"></script>
+    </head>
+    <body>
+
+        <script type="text/javascript" charset="utf-8">
+            webix.ready(function(){
+                webix.ui({
+                    rows:[{ view:"button", value:"Go back", width:250,
+                            click:function(){ 
+                                webix.send("/movies/list/", null, "GET");
+                            }
+
+                        }
+                    ]
+                });
+            })
+        </script>
+
+        <form method="post">
+            {% csrf_token %}
+            <table>
+            {{ form.as_table }}
+            </table>
+            <input type="submit" class="webix_button" style="width:33%;">
+        </form>
+    </body>
+</html>

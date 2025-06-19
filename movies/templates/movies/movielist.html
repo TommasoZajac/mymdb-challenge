@@ -16,8 +16,19 @@
                     { id:"title",   header:"title",    adjust: true},
                     { id:"description",   header:"description",    adjust: true},
                     { id:"created_at",   header:"created at",         adjust: true},
-                    { id:"updated_at",   header:"updated at",         adjust: true}
+                    { id:"updated_at",   header:"updated at",         adjust: true},
+                    { id:"addchar",	header:"add new character", adjust: true,
+                        template:function(obj){ 
+                        return "<div class='webix_el_button'><button class='webixtype_base'>Add</button></div>";
+                        }
+                    }
                 ],
+                onClick:{
+                    webixtype_base:function(ev, id, html){
+                        webix.send("/movies/charform/"+id, null, "GET");
+                    //webix.alert("Clicked row "+id);
+                    }
+                },
                 select:true,
                 autoheight:true,
                 scroll: "auto",
@@ -74,13 +85,39 @@
                     
                 ]
             };
+
+            var nav = {rows:[{
+                            view:"label", 
+                            label: "Navigation bar", 
+                            inputWidth:100, 
+                            align:"left"
+                        },{cols:[
+                        
+                        { view:"button", value:"Character", width:250,
+                            click:function(){ 
+                                webix.send("/movies/characters/", null, "GET");
+                            }
+
+                        },
+                        { view:"button", value:"Person", width:250,
+                            click:function(){
+                                webix.send("/cast/", null, "GET");
+                            } 
+                        },
+                        { view:"button", value:"Review", width:250,
+                            click:function(){
+                                webix.send("/reviews/", null, "GET");
+                            } 
+                        }
+                    ]}]}
             
             webix.ready(function(){
                 webix.ui({
                     rows:[
                     {
                         type:"wide", rows:[ tab, form ]
-                    },{}
+                    },
+                    {type:"wide", rows:[nav]}
                     ]
                 });
 
